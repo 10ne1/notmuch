@@ -1042,12 +1042,20 @@ same relative position within the new buffer."
   "Toggle the current search order.
 
 This command toggles the sort order for the current search. The
-default sort order is defined by `notmuch-search-default-sort-order'."
+default sort order is defined by `notmuch-search-default-sort-order'.
+
+There are two types of orderings: by date and by file size. Toggling is
+permitted only within a specific type, so you can toggle only between
+oldest-first<>newest-first or biggest-first<>smallest-first, but not
+for example between oldest-first<>smallest-first."
   (interactive)
   (setq notmuch-search-default-sort-order
 	(case notmuch-search-default-sort-order
 	  ('oldest-first 'newest-first)
-	  (otherwise 'oldest-first)))
+	  ('newest-first 'oldest-first)
+	  ('biggest-first 'smallest-first)
+	  ('smallest-first 'biggest-first)
+	  (otherwise notmuch-search-default-sort-order)))
   (notmuch-search-refresh-view))
 
 (defun notmuch-group-disjunctive-query-string (query-string)

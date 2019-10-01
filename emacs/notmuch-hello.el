@@ -95,7 +95,9 @@ searches so they still work in customize."
 			    (choice :tag " Sort Order"
 				    (const :tag "Default" nil)
 				    (const :tag "Oldest-first" oldest-first)
-				    (const :tag "Newest-first" newest-first)))
+				    (const :tag "Newest-first" newest-first)
+				    (const :tag "Biggest-first" biggest-first)
+				    (const :tag "Smallest-first" smallest-first)))
 		     (group :format "%v" :inline t (const :format "" :search-type)
 			    (choice :tag " Search Type"
 				    (const :tag "Search mode" nil)
@@ -120,8 +122,9 @@ a plist. Supported properties are
                    shown. If not present then the :query property
                    is used.
   :sort-order      Specify the sort order to be used for the search.
-                   Possible values are 'oldest-first 'newest-first or
-                   nil. Nil means use the default sort order.
+                   Possible values are 'oldest-first 'newest-first
+                   'biggest-first 'smallest-first or nil.
+                   Nil means use the default sort order.
   :search-type     Specify whether to run the search in search-mode
                    or tree mode. Set to 'tree to specify tree
                    mode, set to nil (or anything except tree) to

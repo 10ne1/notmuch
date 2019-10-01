@@ -100,7 +100,9 @@ search results. Note that any filtered searches created by
 `notmuch-search-filter' retain the search order of the parent
 search."
   :type '(choice (const :tag "oldest-first" oldest-first)
-		 (const :tag "newest-first" newest-first))
+		 (const :tag "newest-first" newest-first)
+		 (const :tag "biggest-first" biggest-first)
+		 (const :tag "smallest-first" smallest-first))
   :group 'notmuch-search)
 
 (defcustom notmuch-poll-script nil
