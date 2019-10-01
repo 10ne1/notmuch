@@ -55,6 +55,7 @@ new.tags=unread;inbox;
 new.ignore=
 search.exclude_tags=
 maildir.synchronize_flags=true
+maildir.show_file_size=false
 foo.string=this is another string value
 foo.list=this;is another;list value;
 built_with.compact=something

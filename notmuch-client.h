@@ -324,6 +324,13 @@ void
 notmuch_config_set_maildir_synchronize_flags (notmuch_config_t *config,
 					      bool synchronize_flags);
 
+bool
+notmuch_config_get_maildir_show_file_size (notmuch_config_t *config);
+
+void
+notmuch_config_set_maildir_show_file_size (notmuch_config_t *config,
+					   bool show_file_size);
+
 const char **
 notmuch_config_get_search_exclude_tags (notmuch_config_t *config, size_t *length);
 

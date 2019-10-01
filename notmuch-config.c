@@ -74,7 +74,7 @@ static const char user_config_comment[] =
 static const char maildir_config_comment[] =
     " Maildir compatibility configuration\n"
     "\n"
-    " The following option is supported here:\n"
+    " The following options are supported here:\n"
     "\n"
     "\tsynchronize_flags      Valid values are true and false.\n"
     "\n"
@@ -91,7 +91,18 @@ static const char maildir_config_comment[] =
     "\n"
     "\tThe \"notmuch new\" command will notice flag changes in filenames\n"
     "\tand update tags, while the \"notmuch tag\" and \"notmuch restore\"\n"
-    "\tcommands will notice tag changes and update flags in filenames\n";
+    "\tcommands will notice tag changes and update flags in filenames\n"
+    "\n"
+    "\n"
+    "\tshow_file_size     Valid values are true and false. Default is false.\n"
+    "\n"
+    "\tIf true, \"notmuch show\" and \"notmuch search\" will display message\n"
+    "\tand thread sizes in human readable formats based on maildir file sizes.\n"
+    "\tThread sizes are the sum of respective message sizes and message sizes\n"
+    "\tare computed by \"notmuch new\" (in bytes) when indexing maildir files.\n"
+    "\tIf more than one file is associated with a message (same Message-ID),\n"
+    "\tthe message size is the sum of the individual maildir file sizes.\n"
+    ;
 
 static const char search_config_comment[] =
     " Search configuration\n"
@@ -129,6 +140,7 @@ struct _notmuch_config {
     const char **new_ignore;
     size_t new_ignore_length;
     bool maildir_synchronize_flags;
+    bool maildir_show_file_size;
     const char **search_exclude_tags;
     size_t search_exclude_tags_length;
 };
@@ -462,6 +474,15 @@ notmuch_config_open (void *ctx,
 				"maildir", "synchronize_flags", &error);
     if (error) {
 	notmuch_config_set_maildir_synchronize_flags (config, true);
+	g_error_free (error);
+    }
+
+    error = NULL;
+    config->maildir_show_file_size =
+	g_key_file_get_boolean (config->key_file,
+				"maildir", "show_file_size", &error);
+    if (error) {
+	notmuch_config_set_maildir_show_file_size (config, false);
 	g_error_free (error);
     }
 
@@ -1164,4 +1185,19 @@ notmuch_config_set_maildir_synchronize_flags (notmuch_config_t *config,
     g_key_file_set_boolean (config->key_file,
 			    "maildir", "synchronize_flags", synchronize_flags);
     config->maildir_synchronize_flags = synchronize_flags;
+}
+
+bool
+notmuch_config_get_maildir_show_file_size (notmuch_config_t *config)
+{
+    return config->maildir_show_file_size;
+}
+
+void
+notmuch_config_set_maildir_show_file_size (notmuch_config_t *config,
+					    bool show_file_size)
+{
+    g_key_file_set_boolean (config->key_file,
+			    "maildir", "show_file_size", show_file_size);
+    config->maildir_show_file_size = show_file_size;
 }

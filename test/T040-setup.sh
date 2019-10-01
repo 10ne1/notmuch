@@ -30,6 +30,7 @@ new.tags=foo;bar;
 new.ignore=
 search.exclude_tags=baz;
 maildir.synchronize_flags=true
+maildir.show_file_size=false
 built_with.compact=something
 built_with.field_processor=something
 built_with.retry_lock=something"
