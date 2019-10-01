@@ -83,7 +83,7 @@ _get_disposition (GMimeObject *meta)
 /* Emit a sequence of key/value pairs for the metadata of message.
  * The caller should begin a map before calling this. */
 static void
-format_message_sprinter (sprinter_t *sp, notmuch_message_t *message)
+format_message_sprinter (sprinter_t *sp, notmuch_message_t *message, bool show_filesize)
 {
     /* Any changes to the JSON or S-Expression format should be
      * reflected in the file devel/schemata. */
@@ -92,6 +92,7 @@ format_message_sprinter (sprinter_t *sp, notmuch_message_t *message)
     notmuch_tags_t *tags;
     time_t date;
     const char *relative_date;
+    unsigned long filesize;
 
     sp->map_key (sp, "id");
     sp->string (sp, notmuch_message_get_message_id (message));
@@ -116,6 +117,12 @@ format_message_sprinter (sprinter_t *sp, notmuch_message_t *message)
 	sp->end (sp);
     } else {
 	sp->string (sp, notmuch_message_get_filename (message));
+    }
+
+    if (show_filesize) {
+	sp->map_key (sp, "filesize");
+	filesize = notmuch_message_get_filesize (message);
+	sp->integer (sp, filesize);
     }
 
     sp->map_key (sp, "timestamp");
@@ -612,7 +619,8 @@ format_omitted_part_meta_sprinter (sprinter_t *sp, GMimeObject *meta, GMimePart 
 void
 format_part_sprinter (const void *ctx, sprinter_t *sp, mime_node_t *node,
 		      bool output_body,
-		      bool include_html)
+		      bool include_html,
+		      bool show_filesize)
 {
     /* Any changes to the JSON or S-Expression format should be
      * reflected in the file devel/schemata. */
@@ -620,12 +628,12 @@ format_part_sprinter (const void *ctx, sprinter_t *sp, mime_node_t *node,
     if (node->envelope_file) {
 	const _notmuch_message_crypto_t *msg_crypto = NULL;
 	sp->begin_map (sp);
-	format_message_sprinter (sp, node->envelope_file);
+	format_message_sprinter (sp, node->envelope_file, show_filesize);
 
 	if (output_body) {
 	    sp->map_key (sp, "body");
 	    sp->begin_list (sp);
-	    format_part_sprinter (ctx, sp, mime_node_child (node, 0), true, include_html);
+	    format_part_sprinter (ctx, sp, mime_node_child (node, 0), true, include_html, show_filesize);
 	    sp->end (sp);
 	}
 
@@ -779,7 +787,7 @@ format_part_sprinter (const void *ctx, sprinter_t *sp, mime_node_t *node,
     }
 
     for (i = 0; i < node->nchildren; i++)
-	format_part_sprinter (ctx, sp, mime_node_child (node, i), true, include_html);
+	format_part_sprinter (ctx, sp, mime_node_child (node, i), true, include_html, show_filesize);
 
     /* Close content structures */
     for (i = 0; i < nclose; i++)
@@ -793,7 +801,10 @@ format_part_sprinter_entry (const void *ctx, sprinter_t *sp,
 			    mime_node_t *node, unused (int indent),
 			    const notmuch_show_params_t *params)
 {
-    format_part_sprinter (ctx, sp, node, params->output_body, params->include_html);
+    format_part_sprinter (ctx, sp, node,
+			  params->output_body,
+			  params->include_html,
+			  params->show_filesize);
 
     return NOTMUCH_STATUS_SUCCESS;
 }
@@ -1206,6 +1217,9 @@ notmuch_show_command (notmuch_config_t *config, int argc, char *argv[])
     if (params.crypto.decrypt == NOTMUCH_DECRYPT_NOSTASH ||
 	params.crypto.decrypt == NOTMUCH_DECRYPT_TRUE)
 	params.crypto.verify = true;
+
+    /* display file sizes only if they were indexed */
+    params.show_filesize = notmuch_config_get_maildir_show_file_size (config);
 
     /* specifying a part implies single message display */
     single_message = params.part >= 0;

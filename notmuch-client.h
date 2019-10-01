@@ -74,6 +74,7 @@ typedef struct notmuch_show_params {
     bool entire_thread;
     bool omit_excluded;
     bool output_body;
+    bool show_filesize;
     int part;
     _notmuch_crypto_t crypto;
     bool include_html;
@@ -229,7 +230,8 @@ show_one_part (const char *filename, int part);
 void
 format_part_sprinter (const void *ctx, struct sprinter *sp, mime_node_t *node,
 		      bool output_body,
-		      bool include_html);
+		      bool include_html,
+		      bool show_filesize);
 
 void
 format_headers_sprinter (struct sprinter *sp, GMimeMessage *message,

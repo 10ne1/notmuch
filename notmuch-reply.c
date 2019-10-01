@@ -674,7 +674,7 @@ do_reply (notmuch_config_t *config,
 
 	    /* Start the original */
 	    sp->map_key (sp, "original");
-	    format_part_sprinter (config, sp, node, true, false);
+	    format_part_sprinter (config, sp, node, true, false, false);
 
 	    /* End */
 	    sp->end (sp);
