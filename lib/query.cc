@@ -330,6 +330,12 @@ _notmuch_query_search_documents (notmuch_query_t *query,
 	case NOTMUCH_SORT_MESSAGE_ID:
 	    enquire.set_sort_by_value (NOTMUCH_VALUE_MESSAGE_ID, false);
 	    break;
+	case NOTMUCH_SORT_SMALLEST_FIRST:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_FILESIZE, false);
+	    break;
+	case NOTMUCH_SORT_BIGGEST_FIRST:
+	    enquire.set_sort_by_value (NOTMUCH_VALUE_FILESIZE, true);
+	    break;
 	case NOTMUCH_SORT_UNSORTED:
 	    break;
 	}

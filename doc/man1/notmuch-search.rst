@@ -77,10 +77,11 @@ Supported options for **search** include
         characters (``--format=text0``), as a JSON array (``--format=json``),
         or as an S-Expression list (``--format=sexp``).
 
-``--sort=``\ (**newest-first**\ \|\ **oldest-first**)
+``--sort=``\ (**newest-first**\ \|\ **oldest-first**\ \|\ **biggest-first**\ \|\ **smallest-first**)
     This option can be used to present results in either chronological
     order (**oldest-first**) or reverse chronological order
-    (**newest-first**).
+    (**newest-first** or based on thread/message disk space usage
+    (**biggest-first** and **smallest-first**).
 
     Note: The thread order will be distinct between these two options
     (beyond being simply reversed). When sorting by **oldest-first**

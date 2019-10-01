@@ -782,6 +782,14 @@ typedef enum {
      */
     NOTMUCH_SORT_NEWEST_FIRST,
     /**
+     * Sort by message file size (smallest first).
+     */
+    NOTMUCH_SORT_SMALLEST_FIRST,
+    /**
+     * Sort by message file size (biggest first).
+     */
+    NOTMUCH_SORT_BIGGEST_FIRST,
+    /**
      * Sort by message-id.
      */
     NOTMUCH_SORT_MESSAGE_ID,
