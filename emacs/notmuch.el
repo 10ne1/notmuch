@@ -86,7 +86,7 @@
     ("subject" . "%s ")
     ("tags" . "(%s)"))
   "Search result formatting. Supported fields are:
-	date, count, authors, subject, tags
+	date, count, filesize, authors, subject, tags
 For example:
 	(setq notmuch-search-result-format \(\(\"authors\" . \"%-40s\"\)
 					     \(\"subject\" . \"%s\"\)\)\)
@@ -274,6 +274,12 @@ there will be called at other points of notmuch execution."
  "Face for the single-line message summary in notmuch-show-mode."
  :group 'notmuch-show
  :group 'notmuch-faces)
+
+(defface notmuch-search-thread-filesize
+  '((t :inherit default))
+  "Face used in search mode for thread file sizes."
+  :group 'notmuch-search
+  :group 'notmuch-faces)
 
 (defface notmuch-search-date
   '((t :inherit default))
@@ -809,6 +815,9 @@ non-authors is found, assume that all of the authors match."
 
 (defun notmuch-search-insert-field (field format-string result)
   (cond
+   ((string-equal field "filesize")
+    (insert (propertize (format format-string (file-size-human-readable (plist-get result :filesize)))
+			'face 'notmuch-search-thread-filesize)))
    ((string-equal field "date")
     (insert (propertize (format format-string (plist-get result :date_relative))
 			'face 'notmuch-search-date)))
