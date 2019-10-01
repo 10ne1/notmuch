@@ -1234,6 +1234,13 @@ time_t
 notmuch_thread_get_newest_date (notmuch_thread_t *thread);
 
 /**
+ * Get the total disk space used by the thread i.e. a sum of the
+ * thread messages filesizes.
+ */
+unsigned long
+notmuch_thread_get_filesize (notmuch_thread_t *thread);
+
+/**
  * Get the tags for 'thread', returning a notmuch_tags_t object which
  * can be used to iterate over all tags.
  *

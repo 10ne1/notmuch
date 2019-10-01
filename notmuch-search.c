@@ -63,6 +63,7 @@ typedef struct {
     int dupe;
     GHashTable *addresses;
     int dedup;
+    bool show_size;
 } search_context_t;
 
 typedef struct {
@@ -161,6 +162,7 @@ do_search_threads (search_context_t *ctx)
 	    int matched = notmuch_thread_get_matched_messages (thread);
 	    int files = notmuch_thread_get_total_files (thread);
 	    int total = notmuch_thread_get_total_messages (thread);
+	    unsigned long filesize = notmuch_thread_get_filesize (thread);
 	    const char *relative_date = NULL;
 	    bool first_tag = true;
 
@@ -195,6 +197,10 @@ do_search_threads (search_context_t *ctx)
 	    } else { /* Structured Output */
 		format->map_key (format, "thread");
 		format->string (format, thread_id);
+		if (ctx->show_size) {
+		    format->map_key (format, "filesize");
+		    format->integer (format, filesize);
+		}
 		format->map_key (format, "timestamp");
 		format->integer (format, date);
 		format->map_key (format, "date_relative");
@@ -782,6 +788,7 @@ static search_context_t search_context = {
     .offset = 0,
     .limit = -1, /* unlimited */
     .dupe = -1,
+    .show_size = false,
     .dedup = DEDUP_MAILBOX,
 };
 
@@ -827,6 +834,8 @@ notmuch_search_command (notmuch_config_t *config, int argc, char *argv[])
 	{ .opt_inherit = notmuch_shared_options },
 	{ }
     };
+
+    ctx->show_size = notmuch_config_get_maildir_show_file_size (config);
 
     ctx->output = OUTPUT_SUMMARY;
     opt_index = parse_arguments (argc, argv, options, 1);

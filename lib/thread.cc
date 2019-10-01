@@ -703,6 +703,18 @@ notmuch_thread_get_newest_date (notmuch_thread_t *thread)
     return thread->newest;
 }
 
+unsigned long
+notmuch_thread_get_filesize (notmuch_thread_t *thread)
+{
+    notmuch_message_node_t *node;
+    unsigned long filesize = 0;
+
+    for (node = thread->message_list->head; node; node = node->next)
+	filesize += notmuch_message_get_filesize (node->message);
+
+    return filesize;
+}
+
 notmuch_tags_t *
 notmuch_thread_get_tags (notmuch_thread_t *thread)
 {
