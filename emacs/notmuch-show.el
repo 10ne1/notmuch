@@ -79,6 +79,11 @@ visible for any given message."
   :type 'boolean
   :group 'notmuch-show)
 
+(defcustom notmuch-show-insert-filesize nil
+  "Display file sizes in the message summary line."
+  :type 'boolean
+  :group 'notmuch-show)
+
 (defvar notmuch-show-markup-headers-hook '(notmuch-show-colour-headers)
   "A list of functions called to decorate the headers listed in
 `notmuch-message-headers'.")
@@ -459,7 +464,7 @@ unchanged ADDRESS if parsing fails."
       ;; Otherwise format the name and address together.
       (concat p-name " <" p-address ">"))))
 
-(defun notmuch-show-insert-headerline (headers date tags depth)
+(defun notmuch-show-insert-headerline (headers date filesize tags depth)
   "Insert a notmuch style headerline based on HEADERS for a
 message at DEPTH in the current thread."
   (let ((start (point)))
@@ -469,6 +474,9 @@ message at DEPTH in the current thread."
 	    " ("
 	    date
 	    ") ("
+	    (if notmuch-show-insert-filesize
+		(concat (file-size-human-readable filesize) ") (")
+	      "")
 	    (notmuch-tag-format-tags tags tags)
 	    ")\n")
     (overlay-put (make-overlay start (point)) 'face 'notmuch-message-summary-face)))
@@ -1065,6 +1073,8 @@ is t, hide the part initially and show the button."
 					    (plist-get msg :date_relative)
 					  nil)
 					(plist-get headers :Date))
+				    (when notmuch-show-insert-filesize
+					(plist-get msg :filesize))
 				    (plist-get msg :tags) depth)
 
     (setq content-start (point-marker))
