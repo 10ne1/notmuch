@@ -88,8 +88,8 @@
   "Search result formatting. Supported fields are:
 	date, count, filesize, authors, subject, tags
 For example:
-	(setq notmuch-search-result-format \(\(\"authors\" . \"%-40s\"\)
-					     \(\"subject\" . \"%s\"\)\)\)
+	(setq notmuch-search-result-format '\(\(\"authors\" . \"%-40s\"\)
+					      \(\"subject\" . \"%s\"\)\)\)
 Line breaks are permitted in format strings (though this is
 currently experimental).  Note that a line break at the end of an
 \"authors\" field will get elided if the authors list is long;
