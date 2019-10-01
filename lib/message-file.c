@@ -26,10 +26,13 @@
 
 #include <glib.h> /* GHashTable */
 
+#include <sys/stat.h>
+
 struct _notmuch_message_file {
     /* open stream to (possibly gzipped) file */
     GMimeStream *stream;
     char *filename;
+    unsigned long filesize;
 
     /* Cache for decoded headers */
     GHashTable *headers;
@@ -103,6 +106,26 @@ _notmuch_message_file_close (notmuch_message_file_t *message)
     talloc_free (message);
 }
 
+unsigned long
+_notmuch_message_file_get_size (notmuch_message_file_t *message)
+{
+    return message->filesize;
+}
+
+unsigned long
+_notmuch_message_file_read_size (const char *filename)
+{
+    struct stat statResult;
+
+    if (stat (filename, &statResult) == -1) {
+	fprintf (stderr, "Error opening %s: %s\n",
+		 filename, strerror (errno));
+	return 0;
+    }
+
+    return statResult.st_size;
+}
+
 static bool
 _is_mbox (GMimeStream *stream)
 {
@@ -136,6 +159,8 @@ _notmuch_message_file_parse (notmuch_message_file_t *message)
 	g_mime_init ();
 	initialized = 1;
     }
+
+    message->filesize = _notmuch_message_file_read_size (message->filename);
 
     message->headers = g_hash_table_new_full (strcase_hash, strcase_equal,
 					      free, g_free);

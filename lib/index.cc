@@ -643,6 +643,8 @@ _notmuch_message_index_file (notmuch_message_t *message,
     const char *subject;
     notmuch_status_t status;
     _notmuch_message_crypto_t *msg_crypto;
+    unsigned long filesize;
+    char *filesize_str;
 
     status = _notmuch_message_file_get_mime_message (message_file,
 						     &mime_message);
@@ -673,6 +675,14 @@ _notmuch_message_index_file (notmuch_message_t *message,
     }
 
     talloc_free (msg_crypto);
+
+    filesize = _notmuch_message_file_get_size (message_file);
+    filesize_str = talloc_asprintf (NULL, "%lu", filesize);
+    if (! filesize_str)
+	return NOTMUCH_STATUS_OUT_OF_MEMORY;
+
+    _notmuch_message_add_term (message, "filesize", filesize_str);
+    talloc_free (filesize_str);
 
     return NOTMUCH_STATUS_SUCCESS;
 }

@@ -1502,6 +1502,12 @@ time_t
 notmuch_message_get_date (notmuch_message_t *message);
 
 /**
+ * Get the filesize in bytes of 'message'.
+ */
+unsigned long
+notmuch_message_get_filesize  (notmuch_message_t *message);
+
+/**
  * Get the value of the specified header from 'message' as a UTF-8 string.
  *
  * Common headers are stored in the database when the message is

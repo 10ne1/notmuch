@@ -106,6 +106,7 @@ typedef enum {
     NOTMUCH_VALUE_FROM,
     NOTMUCH_VALUE_SUBJECT,
     NOTMUCH_VALUE_LAST_MOD,
+    NOTMUCH_VALUE_FILESIZE,
 } notmuch_value_t;
 
 /* Xapian (with flint backend) complains if we provide a term longer
@@ -405,6 +406,24 @@ _notmuch_message_file_close (notmuch_message_file_t *message);
  */
 notmuch_status_t
 _notmuch_message_file_parse (notmuch_message_file_t *message);
+
+/* Get the message->filesize member. */
+unsigned long
+_notmuch_message_file_get_size (notmuch_message_file_t *message);
+
+/* Get the size in bytes of file pointed by filename */
+unsigned long
+_notmuch_message_file_read_size (const char *filename);
+
+/* Add the value of message_file->filesize to message->filesize */
+void
+_notmuch_message_add_filesize (notmuch_message_t *message,
+			       notmuch_message_file_t *message_file);
+
+/* Subtract filesize from message->filesize */
+void
+_notmuch_message_subtract_filesize (notmuch_message_t *message,
+				    unsigned long filesize);
 
 /* Get the gmime message of a message file.
  *

@@ -1175,6 +1175,26 @@ notmuch_message_get_date (notmuch_message_t *message)
     return Xapian::sortable_unserialise (value);
 }
 
+unsigned long
+notmuch_message_get_filesize (notmuch_message_t *message)
+{
+    std::string value;
+
+    try {
+	value = message->doc.get_value (NOTMUCH_VALUE_FILESIZE);
+    } catch (Xapian::Error &error) {
+	_notmuch_database_log(notmuch_message_get_database (message), "A Xapian exception occurred when reading filesize: %s\n",
+		 error.get_msg().c_str());
+	message->notmuch->exception_reported = TRUE;
+	return 0;
+    }
+
+    if (value.empty ())
+	/* sortable_unserialise is undefined on empty string */
+	return 0;
+    return Xapian::sortable_unserialise (value);
+}
+
 notmuch_tags_t *
 notmuch_message_get_tags (notmuch_message_t *message)
 {
@@ -1401,6 +1421,25 @@ _notmuch_message_close (notmuch_message_t *message)
 	_notmuch_message_file_close (message->message_file);
 	message->message_file = NULL;
     }
+}
+
+void
+_notmuch_message_add_filesize (notmuch_message_t *message,
+			       notmuch_message_file_t *message_file)
+{
+    unsigned long old_size = notmuch_message_get_filesize (message);
+    unsigned long new_size = _notmuch_message_file_get_size (message_file);
+    message->doc.add_value (NOTMUCH_VALUE_FILESIZE,
+			    Xapian::sortable_serialise (old_size + new_size));
+}
+
+void
+_notmuch_message_subtract_filesize (notmuch_message_t *message,
+				    unsigned long filesize)
+{
+    unsigned long old_size = notmuch_message_get_filesize (message);
+    message->doc.add_value (NOTMUCH_VALUE_FILESIZE,
+			    Xapian::sortable_serialise (old_size - filesize));
 }
 
 /* Add a name:value term to 'message', (the actual term will be
