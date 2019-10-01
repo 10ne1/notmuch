@@ -119,6 +119,8 @@ typedef struct {
  *
  *	SUBJECT:	The value of the "Subject" header
  *
+ *      FILESIZE:       The size in bytes of the message maildir file
+ *
  *	LAST_MOD:	The revision number as of the last tag or
  *			filename change.
  *
@@ -309,6 +311,7 @@ prefix_t prefix_table[] = {
     { "subject",                "XSUBJECT",     NOTMUCH_FIELD_EXTERNAL |
       NOTMUCH_FIELD_PROBABILISTIC |
       NOTMUCH_FIELD_PROCESSOR },
+    { "filesize",		"XFILESIZE",	NOTMUCH_FIELD_EXTERNAL },
 };
 
 static void
@@ -1049,6 +1052,7 @@ notmuch_database_open_verbose (const char *path,
 	notmuch->value_range_processor = new Xapian::NumberValueRangeProcessor (NOTMUCH_VALUE_TIMESTAMP);
 	notmuch->date_range_processor = new ParseTimeValueRangeProcessor (NOTMUCH_VALUE_TIMESTAMP);
 	notmuch->last_mod_range_processor = new Xapian::NumberValueRangeProcessor (NOTMUCH_VALUE_LAST_MOD, "lastmod:");
+	notmuch->filesize_range_processor = new Xapian::NumberValueRangeProcessor (NOTMUCH_VALUE_FILESIZE, "filesize:");
 
 	notmuch->query_parser->set_default_op (Xapian::Query::OP_AND);
 	notmuch->query_parser->set_database (*notmuch->xapian_db);
@@ -1057,6 +1061,7 @@ notmuch_database_open_verbose (const char *path,
 	notmuch->query_parser->add_valuerangeprocessor (notmuch->value_range_processor);
 	notmuch->query_parser->add_valuerangeprocessor (notmuch->date_range_processor);
 	notmuch->query_parser->add_valuerangeprocessor (notmuch->last_mod_range_processor);
+	notmuch->query_parser->add_valuerangeprocessor (notmuch->filesize_range_processor);
 
 	for (i = 0; i < ARRAY_SIZE (prefix_table); i++) {
 	    const prefix_t *prefix = &prefix_table[i];
@@ -1134,6 +1139,8 @@ notmuch_database_close (notmuch_database_t *notmuch)
     notmuch->date_range_processor = NULL;
     delete notmuch->last_mod_range_processor;
     notmuch->last_mod_range_processor = NULL;
+    delete notmuch->filesize_range_processor;
+    notmuch->filesize_range_processor = NULL;
 
     return status;
 }
