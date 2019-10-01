@@ -14,7 +14,7 @@ are interleaved. Keys are printed as keywords (symbols preceded by a
 colon), e.g. (:id "123" :time 54321 :from "foobar"). Null is printed as
 nil, true as t and false as nil.
 
-This is version 4 of the structured output format.
+This is version 5 of the structured output format.
 
 Version history
 ---------------
@@ -35,6 +35,9 @@ v4
   individual errors.
 - (notmuch 0.29) added message.crypto to identify overall message
   cryptographic state
+
+v5
+- Added message.filesize and thread_summary.filesize fields.
 
 Common non-terminals
 --------------------
@@ -73,6 +76,7 @@ message = {
     id:             messageid,
     match:          bool,
     filename:	    [string*],
+    filesize:       int,      # space in bytes used by this message's files
     timestamp:      unix_time, # date header as unix time
     date_relative:  string,   # user-friendly timestamp
     tags:           [string*],
@@ -200,6 +204,7 @@ thread_summary = {
     date_relative:  string,   # user-friendly timestamp
     matched:        int,      # number of matched messages
     total:          int,      # total messages in thread
+    filesize:       int,      # space in bytes used by all messages in this thread
     authors:        string,   # comma-separated names with | between
                               # matched and unmatched
     subject:        string,
