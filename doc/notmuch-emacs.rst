@@ -172,8 +172,8 @@ variables.
     Control how each thread of messages is presented in the
     ``notmuch-show-mode`` buffer
 
-:index:`notmuch-search-oldest-first`
-    Display the oldest threads at the top of the buffer
+:index:`notmuch-search-default-sort-order`
+    Controls which threads are displayed from the top of the buffer
 
 .. _notmuch-show:
 

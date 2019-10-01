@@ -28,7 +28,7 @@
 (require 'notmuch-lib)
 (require 'notmuch-mua)
 
-(declare-function notmuch-search "notmuch" (&optional query oldest-first target-thread target-line continuation))
+(declare-function notmuch-search "notmuch" (&optional query sort-order target-thread target-line continuation))
 (declare-function notmuch-poll "notmuch" ())
 (declare-function notmuch-tree "notmuch-tree"
                   (&optional query query-context target buffer-name open-target))
@@ -381,7 +381,7 @@ afterwards.")
     (setq search (notmuch-hello-trim search))
     (let ((history-delete-duplicates t))
       (add-to-history 'notmuch-search-history search)))
-  (notmuch-search search notmuch-search-oldest-first))
+  (notmuch-search search notmuch-search-default-sort-order))
 
 (defun notmuch-hello-add-saved-search (widget)
   (interactive)
@@ -443,7 +443,7 @@ diagonal."
     (notmuch-search (widget-get widget
 				:notmuch-search-terms)
 		    (widget-get widget
-				:notmuch-search-oldest-first))))
+				:notmuch-search-sort-order))))
 
 (defun notmuch-saved-search-count (search)
   (car (process-lines notmuch-command "count" search)))
@@ -575,10 +575,9 @@ with `notmuch-hello-query-counts'."
 		  (widget-insert (make-string column-indent ? )))
 	      (let* ((name (plist-get elem :name))
 		     (query (plist-get elem :query))
-		     (oldest-first (case (plist-get elem :sort-order)
-				     (newest-first nil)
-				     (oldest-first t)
-				     (otherwise notmuch-search-oldest-first)))
+		     (sort-order (if (plist-get elem :sort-order)
+				     (plist-get elem :sort-order)
+				   notmuch-search-default-sort-order))
 		     (search-type (eq (plist-get elem :search-type) 'tree))
 		     (msg-count (plist-get elem :count)))
 		(widget-insert (format "%8s "
@@ -586,7 +585,7 @@ with `notmuch-hello-query-counts'."
 		(widget-create 'push-button
 			       :notify #'notmuch-hello-widget-search
 			       :notmuch-search-terms query
-			       :notmuch-search-oldest-first oldest-first
+			       :notmuch-search-sort-order sort-order
 			       :notmuch-search-type search-type
 			       name)
 		(setq column-indent
